@@ -4,8 +4,14 @@ window.onload = () => {
 
     // Crear handlers para los botones de control
     let botonCrearTarjeta = document.querySelector('.create-btn');
-    botonCrearTarjeta.addEventListener('click',crearNuevaTarjeta);
+    botonCrearTarjeta.addEventListener('click', crearNuevaTarjeta);
+    
+    let botonGuardarTarjetas = document.querySelector('.save-btn');
+    botonGuardarTarjetas.addEventListener('click', guardarTarjetas);
 
+    let botonCargarTarjetas = document.querySelector('.load-btn');
+    botonCargarTarjetas.addEventListener('click', cargarTarjetas);
+    
     let botonOrdenarAZ = document.querySelector(".sort-options button:nth-child(2)")
     botonOrdenarAZ.addEventListener('click', ordenarNombreAZ);
 
@@ -45,7 +51,7 @@ function crearTarjetas(filosofos) {
         let imagenPais = document.createElement('img');
         imagenPais.src = filosofo.pais.bandera;
         imagenPais.alt = `Bandera de ${filosofo.pais.nombre}`;
-        
+
         let nombrePais = document.createElement('span');
         nombrePais.classList.add('pais');
         nombrePais.innerHTML = filosofo.pais.nombre;
@@ -61,7 +67,7 @@ function crearTarjetas(filosofos) {
 
         let tituloCorriente = document.createElement('span');
         tituloCorriente.innerHTML = "Corriente: "
-        
+
         let corriente = document.createElement('span');
         corriente.classList.add('corriente');
         corriente.innerHTML = filosofo.corriente;
@@ -70,14 +76,14 @@ function crearTarjetas(filosofos) {
         infoCorriente.append(corriente);
 
         filaInfo.append(infoCorriente);
-        
+
         // Añadimos info del arma a filaInfo
         let infoArma = document.createElement('div');
         infoArma.classList.add('info-arma');
 
         let tituloArma = document.createElement('span');
         tituloArma.innerHTML = "Arma: "
-        
+
         let arma = document.createElement('span');
         arma.classList.add('arma');
         arma.innerHTML = filosofo.arma;
@@ -86,7 +92,7 @@ function crearTarjetas(filosofos) {
         infoArma.append(arma);
 
         filaInfo.append(infoArma);
-        
+
         info.append(filaInfo);
 
         // Añadimos caja de habilidades
@@ -103,7 +109,7 @@ function crearTarjetas(filosofos) {
             // 1.Icono de habilidad
             // let iconoSkill = document.createElement('img');
             // iconoSkill.alt = `Icono de ${infoHabilidad.habilidad}`;
-            
+
             // infoSkill.append(iconoSkill)
 
             // 2.Etiqueta de habilidad
@@ -126,8 +132,6 @@ function crearTarjetas(filosofos) {
 
             habilidades.append(infoSkill)
         }
-
-        info.append(habilidades);
 
         // Creacion boton para eliminar tarjeta
         info.append(habilidades);
@@ -223,12 +227,28 @@ function parsearTarjetas(tarjetas){
         filosofo.imagen = tarjeta.querySelector('.photo').src;
         filosofo.pais = {};
         // Completar funció
-        
+        filosofo.pais.nombre = tarjeta.querySelector(".pais").innerHTML;
+        filosofo.pais.bandera = tarjeta.querySelector(".info-pais img").src;
+
+        filosofo.corriente = tarjeta.querySelector(".corriente").innerHTML;
+
+        filosofo.arma = tarjeta.querySelector(".arma").innerHTML;
+
+        filosofo.habilidades = [];
+
         let habilidades = tarjeta.querySelectorAll('.skill');
         for (let habilidad of habilidades){
             let habilidadParaGuardar = {};
+
             // Completar funció
+            habilidadParaGuardar.habilidad = habilidad.querySelector(".skill-name").innerHTML;
+
+            let widthHabilidad = habilidad.querySelector(".level").style.width;
+            habilidadParaGuardar.nivel = (parseInt(widthHabilidad) / 25);
+
+            filosofo.habilidades.push(habilidadParaGuardar);
         }
+
         filosofosParseados.push(filosofo);
     }
     return filosofosParseados;
@@ -239,8 +259,13 @@ function guardarTarjetas(){
     localStorage.setItem('tarjetas',JSON.stringify(parsearTarjetas(tarjetas)));
 }
 
-
 function cargarTarjetas() {
+    let tarjetasGuardadas = JSON.parse(localStorage.getItem('tarjetas'));
+
+    let contenedor = document.querySelector('.cards-container');
+    contenedor.innerHTML = "";
+
+    crearTarjetas(tarjetasGuardadas)
 }
 
 const filosofos = [
